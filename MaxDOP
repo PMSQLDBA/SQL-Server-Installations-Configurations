@@ -1,0 +1,41 @@
+Max Degree of Parallelism (MAXDOP) in SQL Server
+
+Content Owner: Lekireddy Ravinderreddy
+
+"MAXDOP controls how many CPUs SQL Server can use for a single query.
+ If it's set too high, big queries may consume all CPUs, causing CPU pressure.
+ If too low, complex queries may run slow.
+ I usually check the instance MAXDOP setting using sp_configure and adjust based on workload.
+ For OLTP systems, I prefer keeping MAXDOP around 2 or 4 to balance CPU usage."
+
+MAXDOP stands for Maximum Degree of Parallelism.
+It controls how many CPU cores SQL Server can use to run a single query in parallel.
+
+Simple Example:
+If a server has 8 CPUs,
+ and MAXDOP = 0,
+ SQL Server can use all 8 cores for one large query.
+
+If MAXDOP = 1,
+ SQL Server will run the query on just one core (no parallelism).
+ MAXDOP settings – 
+
+1.    MAXDOP too high - large queries may consume all CPUs → Causes CPU bottlenecks for other users
+2.    MAXDOP too low - Complex queries may run slowly as they can't use multiple cores
+3.    Balanced MAXDOP - Better performance without overloading CPU
+
+Default MAXDOP Value:
+
+Default value = 0 - Means: SQL Server decides how many cores to use, based on query cost and server CPUs)
+
+Best Practice Settings (Common Interview Point): Recommended MAXDOP
+1.    OLTP (Transactional) - MAXDOP = 4 or MAXDOP = 2
+2.    OLAP / Data Warehouse - Can allow higher MAXDOP
+
+Instance Level Setting - sp_configure 'max degree of parallelism'
+
+Check MAXDOP: EXEC sp_configure 'max degree of parallelism';
+For individual queries:
+ Query can override MAXDOP using query hint: OPTION (MAXDOP 1)
+
+Also, set Cost Threshold for Parallelism to avoid parallel plans for small queries.
